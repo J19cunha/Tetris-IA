@@ -13,16 +13,37 @@ program_icon = pygame.image.load("data/icon2.png")
 pygame.display.set_icon(program_icon)
 
 
+def check_figure(piece):
+    if[piece[0][0]+1, piece[0][1]] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece:
+        print("square")
+    elif[piece[0][0]+1, piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]] in piece and [piece[0][0]+3,piece[0][1]] in piece:
+        print("tower")
+    elif[piece[0][0], piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+2] in piece:
+        print("S")
+    elif[piece[0][0]-1,piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0]-1, piece[0][1]+2] in piece:
+        print("Z")
+    elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece :
+        print("J")
+    elif[piece[0][0],piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece :
+        print("T")
+    elif[piece[0][0],piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece and [piece[0][0]+1, piece[0][1]+2] in piece :
+        print("L")
+
 async def agent_loop(server_address="localhost:8000", agent_name="student"):
     async with websockets.connect(f"ws://{server_address}/player") as websocket:
 
         # Receive information about static game properties
         await websocket.send(json.dumps({"cmd": "join", "name": agent_name}))
+        msg = await websocket.recv()
+        game_properties = json.loads(msg)
 
         # Next 3 lines are not needed for AI agent
         SCREEN = pygame.display.set_mode((299, 123))
         SPRITES = pygame.image.load("data/pad.png").convert_alpha()
         SCREEN.blit(SPRITES, (0, 0))
+
+        
+ 
 
         while True:
             try:
@@ -30,37 +51,51 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                     await websocket.recv()
                 )  # receive game update, this must be called timely or your game will get out of sync with the server
 
+                key=""
+                game=state['game']
+                piece=state['piece']
+                next_piece=state['next_pieces'][0]
+
+                if piece:
+                    check_figure(piece)
+                
+                await websocket.send(
+                    json.dumps({"cmd": "key", "key": key})
+                )
                 # Next lines are only for the Human Agent, the key values are nonetheless the correct ones!
-                key = ""
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
+                # key = ""
+                # for event in pygame.event.get():
+                #     if event.type == pygame.QUIT:
+                #         pygame.quit()
 
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_UP:
-                            key = "w"
-                        elif event.key == pygame.K_LEFT:
-                            key = "a"
-                        elif event.key == pygame.K_DOWN:
-                            key = "s"
-                        elif event.key == pygame.K_RIGHT:
-                            key = "d"
+                #     if event.type == pygame.KEYDOWN:
+                #         if event.key == pygame.K_UP:
+                #             key = "w"
+                #         elif event.key == pygame.K_LEFT:
+                #             key = "a"
+                #         elif event.key == pygame.K_DOWN:
+                #             key = "s"
+                #         elif event.key == pygame.K_RIGHT:
+                #             key = "d"
 
-                        elif event.key == pygame.K_d:
-                            import pprint
+                #         elif event.key == pygame.K_d:
+                #             import pprint
 
-                            pprint.pprint(state)
+                #             pprint.pprint(state)
 
-                        await websocket.send(
-                            json.dumps({"cmd": "key", "key": key})
-                        )  # send key command to server - you must implement this send in the AI agent
-                        break
+                #         await websocket.send(
+                #             json.dumps({"cmd": "key", "key": key})
+                #         )  # send key command to server - you must implement this send in the AI agent
+                #         break
+
             except websockets.exceptions.ConnectionClosedOK:
                 print("Server has cleanly disconnected us")
                 return
 
             # Next line is not needed for AI agent
-            pygame.display.flip()
+            #pygame.display.flip()
+
+
 
 
 # DO NOT CHANGE THE LINES BELLOW
