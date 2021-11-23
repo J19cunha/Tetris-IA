@@ -1,7 +1,9 @@
 import asyncio
 import getpass
 import json
+import pprint
 import os
+from typing import Match
 
 import websockets
 
@@ -13,21 +15,115 @@ program_icon = pygame.image.load("data/icon2.png")
 pygame.display.set_icon(program_icon)
 
 
+
 def check_figure(piece):
     if[piece[0][0]+1, piece[0][1]] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece:
-        print("square")
+        return "square"
     elif[piece[0][0]+1, piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]] in piece and [piece[0][0]+3,piece[0][1]] in piece:
-        print("tower")
+        return "tower"
     elif[piece[0][0], piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+2] in piece:
-        print("S")
+        return "S"
     elif[piece[0][0]-1,piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0]-1, piece[0][1]+2] in piece:
-        print("Z")
+        return "Z"
     elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece :
-        print("J")
+        return "J"
     elif[piece[0][0],piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece :
-        print("T")
+        return "T"
     elif[piece[0][0],piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece and [piece[0][0]+1, piece[0][1]+2] in piece :
-        print("L")
+        return "L"
+
+
+
+
+
+def possibilities(piece,game):
+    # meter a peça à esquerda
+    a = [piece[0][0],piece[1][0],piece[2][0],piece[3][0]]
+    minvalue = min(a)
+    b= [piece[0][1],piece[1][1],piece[2][1],piece[3][1]]
+    miny=min(b)
+    newpiece = [[piece[0][0]-minvalue+1,piece[0][1]-miny+1],[piece[1][0]-minvalue+1,piece[1][1]-miny+1],[piece[2][0]-minvalue+1,piece[2][1]-miny+1],[piece[3][0]-minvalue+1,piece[3][1]-miny+1]]
+    listp=[]
+    aux = newpiece
+    #print(f"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa    {aux}")
+    #print(maxY)  
+
+
+    for x in range(1,9,1):
+        newpiece = [ [aux[0][0]+x-1,aux[0][1]],[aux[1][0]+x-1,aux[1][1]],[aux[2][0]+x-1,aux[2][1]],[aux[3][0]+x-1,aux[3][1]]]
+        xx= [newpiece[0][0],newpiece[1][0],newpiece[2][0],newpiece[3][0]]
+        maxX=max(xx)
+        if maxX == 9:
+            break
+        else:
+            for y in range (1,30,1):
+                newpiece = [ [newpiece[0][0],newpiece[0][1]+1],[newpiece[1][0],newpiece[1][1]+1],[newpiece[2][0],newpiece[2][1]+1],[newpiece[3][0],newpiece[3][1]+1]]
+                y= [newpiece[0][1],newpiece[1][1],newpiece[2][1],newpiece[3][1]]
+                maxY=max(y)
+                #print(f'peca:{newpiece}')
+                #print(f'game:{game}\n-------\n')
+                flag=0
+                for cord in newpiece:
+                    if cord in game: #colisão
+                        possibility = [[newpiece[0][0],newpiece[0][1]-1],[newpiece[1][0],newpiece[1][1]-1],[newpiece[2][0],newpiece[2][1]-1],[newpiece[3][0],newpiece[3][1]-1]]
+                        listp.append(possibility)
+                        flag=1
+                        break
+                if flag==1:
+                    break
+                else:
+                    if maxY==29:
+                        listp.append(newpiece)
+                        break
+        
+    game_possibilities=[]
+    for piecee in listp:
+        #print(piecee)
+        newGame= game+piecee
+        game_possibilities.append(newGame) 
+        
+    # print("GAME: ",game_possibilities)
+    # b=len(game_possibilities)
+    # a=game_possibilities[0]
+    # print("FIRST",a)
+    # print("NUMERO", b)
+
+    #numero_possiblidades=8-larguradapeça+1
+
+    return game_possibilities
+
+def get_board(piece,game):
+    
+    board=[[0 for i in range(1,9)] for j in range(1,30)]
+
+    for coords in game:
+        board[coords[1]-1][coords[0]-1] = 1
+
+    
+    
+    # for piecee in game:
+    return board
+        
+
+
+def heigth(board):
+
+
+    
+
+# def height(game,board):
+    
+    # print(for i in board)
+    # print(board[1])
+    # for coords in game:
+    #     print(coords[1])
+
+#     sum_height = 0
+#     max_height = 29
+#     min_height = 0
+
+#     for col in zip(*game):
+        
 
 async def agent_loop(server_address="localhost:8000", agent_name="student"):
     async with websockets.connect(f"ws://{server_address}/player") as websocket:
@@ -41,9 +137,9 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
         SCREEN = pygame.display.set_mode((299, 123))
         SPRITES = pygame.image.load("data/pad.png").convert_alpha()
         SCREEN.blit(SPRITES, (0, 0))
-
-        
- 
+    
+        start = 1
+        listafinal=[]
 
         while True:
             try:
@@ -55,9 +151,24 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                 game=state['game']
                 piece=state['piece']
                 next_piece=state['next_pieces'][0]
+                
+                
+                if start:           
+                    figure = check_figure(piece)
+                    lista = possibilities(piece, game)
+                    #print(lista)
+                    #print("-----------------------------------------")
+                    #lista=height(game)
+                    # lista =get_board(piece,game)
+                    # print(lista)
+                    board = get_board(piece,game)
+                    #Height = height(game,board)
+                    pprint.pprint(board)
+                    start = 0
+                if not piece:
+                    start = 1
 
-                if piece:
-                    check_figure(piece)
+                
                 
                 await websocket.send(
                     json.dumps({"cmd": "key", "key": key})
