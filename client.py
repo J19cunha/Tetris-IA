@@ -92,13 +92,12 @@ def possibilities(piece,game):
 
     return game_possibilities
 
-def get_board(piece,game):
+def get_board(game):
     
     board=[[0 for i in range(1,9)] for j in range(1,30)]
 
     for coords in game:
         board[coords[1]-1][coords[0]-1] = 1
-
     
     
     # for piecee in game:
@@ -106,23 +105,32 @@ def get_board(piece,game):
         
 
 
-def heigth(board):
+def max_height(board):
+    height=[]
+    for x in range (1,9):    
+        for y in range (1,30):
+            if(board[y-1][x-1]==1):
+                height.append(30-y)
+                break
 
+    return max(height, default=0)
+  
+def number_of_holes(board):
+    holes=0
 
-    
+    pprint.pprint(board)
+    for column in zip(*board):
+         i=0
+         while i<29 and column[i] != 1:
+             i+=1
 
-# def height(game,board):
-    
-    # print(for i in board)
-    # print(board[1])
-    # for coords in game:
-    #     print(coords[1])
+         holes += len([x for x in column[i+1:] if x == 0])
 
-#     sum_height = 0
-#     max_height = 29
-#     min_height = 0
+    print(holes)
 
-#     for col in zip(*game):
+        
+        #holes += len([x for x in column[i+1:] if x== ])
+
         
 
 async def agent_loop(server_address="localhost:8000", agent_name="student"):
@@ -161,9 +169,11 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                     #lista=height(game)
                     # lista =get_board(piece,game)
                     # print(lista)
-                    board = get_board(piece,game)
-                    #Height = height(game,board)
-                    pprint.pprint(board)
+                    board = get_board(game)
+                    Height = max_height(board)
+                    #pprint.pprint(board)
+                    #print(Height)
+                    number_holes = number_of_holes(board)
                     start = 0
                 if not piece:
                     start = 1
