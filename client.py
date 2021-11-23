@@ -17,10 +17,11 @@ pygame.display.set_icon(program_icon)
 
 
 def check_figure(piece):
+    
     if[piece[0][0]+1, piece[0][1]] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece:
-        return "square"
+        return "o"
     elif[piece[0][0]+1, piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]] in piece and [piece[0][0]+3,piece[0][1]] in piece:
-        return "tower"
+        return "i"
     elif[piece[0][0], piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+2] in piece:
         return "S"
     elif[piece[0][0]-1,piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0]-1, piece[0][1]+2] in piece:
@@ -118,7 +119,6 @@ def max_height(board):
 def number_of_holes(board):
     holes=0
 
-    pprint.pprint(board)
     for column in zip(*board):
          i=0
          while i<29 and column[i] != 1:
@@ -126,12 +126,48 @@ def number_of_holes(board):
 
          holes += len([x for x in column[i+1:] if x == 0])
 
-    print(holes)
+    #print(holes)
+    return holes
 
-        
-        #holes += len([x for x in column[i+1:] if x== ])
 
-        
+
+def bumpiness(board):
+
+    height=[]
+    total_bumpiness=0
+    max_bumpiness=0
+
+    for x in range (1,9):    
+        for y in range (1,30):
+            if(board[y-1][x-1]==1):
+                height.append(30-y)
+                break
+
+
+    for i in range(len(height)-1):
+        bumpiness = abs(height[i] -height[i+1])
+        max_bumpiness = max(bumpiness, max_bumpiness)
+        total_bumpiness += abs(height[i] - height[i+1])
+
+    return total_bumpiness
+
+#só para testar
+def decision(board):
+    key = ''
+    for y in range(28, -1, -1):
+        if sum(board[y]) == 0:
+            return 'a'
+        else:   
+            return 'd'
+
+def complete_lines(board):
+    
+    comp_lines = 0
+    for y in range(28, -1, -1):
+        if sum(board[y]) == 8:
+            comp_lines += 1
+    return comp_lines
+    
 
 async def agent_loop(server_address="localhost:8000", agent_name="student"):
     async with websockets.connect(f"ws://{server_address}/player") as websocket:
@@ -160,7 +196,6 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                 piece=state['piece']
                 next_piece=state['next_pieces'][0]
                 
-                
                 if start:           
                     figure = check_figure(piece)
                     lista = possibilities(piece, game)
@@ -174,11 +209,13 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                     #pprint.pprint(board)
                     #print(Height)
                     number_holes = number_of_holes(board)
+                    bumpinessssss= bumpiness(board)
+                    comp_lines = complete_lines(board)
                     start = 0
                 if not piece:
                     start = 1
 
-                
+                key = decision(board)
                 
                 await websocket.send(
                     json.dumps({"cmd": "key", "key": key})
@@ -215,8 +252,6 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
 
             # Next line is not needed for AI agent
             #pygame.display.flip()
-
-
 
 
 # DO NOT CHANGE THE LINES BELLOW
