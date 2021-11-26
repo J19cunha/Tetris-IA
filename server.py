@@ -33,7 +33,8 @@ MAX_HIGHSCORES = 10
 class GameServer:
     """Network Game Server."""
 
-    def __init__(self, level, timeout, grading=None):
+    def __init__(self, level, timeout, seed=0, grading=None):
+        self.seed = seed
         self.game = Game()
         self.players = asyncio.Queue()
         self.viewers = set()
@@ -58,7 +59,9 @@ class GameServer:
         )
 
         self._highscores.append((self.current_player.name, score))
-        self._highscores = sorted(self._highscores, key=lambda s: s[1], reverse=True)[:MAX_HIGHSCORES]
+        self._highscores = sorted(self._highscores, key=lambda s: s[1], reverse=True)[
+            :MAX_HIGHSCORES
+        ]
 
         print(self._highscores)
 
@@ -82,6 +85,8 @@ class GameServer:
         try:
             async for message in websocket:
                 data = json.loads(message)
+                if not "cmd" in data:
+                    continue
                 if data["cmd"] == "join":
                     if path == "/player":
                         logger.info("<%s> has joined", data["name"])
@@ -90,8 +95,9 @@ class GameServer:
                     if path == "/viewer":
                         logger.info("Viewer connected")
                         self.viewers.add(websocket)
-                        game_info = self.game.info()
-                        await websocket.send(json.dumps(game_info))
+
+                    game_info = self.game.info()
+                    await websocket.send(json.dumps(game_info))
 
                 if data["cmd"] == "key" and self.current_player.ws == websocket:
                     logger.debug((self.current_player.name, data))
@@ -117,6 +123,9 @@ class GameServer:
 
             try:
                 logger.info("Starting game for <%s>", self.current_player.name)
+                if self.seed > 0:
+                    random.seed(self.seed)
+
                 self.game = Game()
 
                 game_info = await self.game.loop()
@@ -128,6 +137,7 @@ class GameServer:
 
                 while self.game.running:
                     state = await self.game.loop()
+                    state["player"] = self.current_player.name
 
                     state = json.dumps(state)
 
@@ -139,7 +149,8 @@ class GameServer:
                 self.save_highscores(self.game.score)
 
                 game_info = self.game.info()
-                game_info["score"] = self.game.score
+                game_info["player"] = self.current_player.name
+
                 await self.send_info(game_info, highscores=True)
                 await self.current_player.ws.close()
                 self.current_player = None
@@ -172,10 +183,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if args.seed > 0:
-        random.seed(args.seed)
-
-    g = GameServer(0, -1, args.grading_server)
+    g = GameServer(0, -1, args.seed, args.grading_server)
 
     game_loop_task = asyncio.ensure_future(g.mainloop())
 
