@@ -38,37 +38,37 @@ def check_figure(piece):
 
         elif[piece[0][0]-1,piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0]-1, piece[0][1]+2] in piece:
             return "Z","1"
-        elif[piece[0][0]-1,piece[0][1]-1] in piece and [piece[0][0]-1, piece[0][1]] in piece and [piece[0][0]-2, piece[0][1]-1] in piece:
+        elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0]+2, piece[0][1]+1] in piece:
             return "Z","2"
 
 
         elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece :
             return "J","1"
-        elif[piece[0][0],piece[0][1]+1] in piece and [piece[0][0]-1, piece[0][1]] in piece and [piece[0][0]-2, piece[0][1]] in piece :
+        elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]+1] in piece :
             return "J","2"
-        elif[piece[0][0]-1,piece[0][1]] in piece and [piece[0][0], piece[0][1]-1] in piece and [piece[0][0], piece[0][1]-2] in piece :
+        elif[piece[0][0],piece[0][1]+1] in piece and [piece[0][0]-1, piece[0][1]+2] in piece and [piece[0][0], piece[0][1]+2] in piece :
             return "J","3"
-        elif[piece[0][0],piece[0][1]-1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0]+2, piece[0][1]+2] in piece :
+        elif[piece[0][0],piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0]+2, piece[0][1]+1] in piece :
             return "J","4"
 
-        
+
         elif[piece[0][0],piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece :
             return "T","1"
-        elif[piece[0][0]-1,piece[0][1]] in piece and [piece[0][0]-1, piece[0][1]+1] in piece and [piece[0][0]-2, piece[0][1]] in piece :
+        elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]] in piece and [piece[0][0]+1, piece[0][1]+1] in piece :
             return "T","2"
-        elif[piece[0][0],piece[0][1]-1] in piece and [piece[0][0]-1, piece[0][1]-1] in piece and [piece[0][0], piece[0][1]-2] in piece :
+        elif[piece[0][0]-1,piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece :
             return "T","3"
-        elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0]+1, piece[0][1]-1] in piece and [piece[0][0]+2, piece[0][1]] in piece :
+        elif[piece[0][0]-1,piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece :
             return "T","4"
-
+        
 
         elif[piece[0][0],piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+2] in piece and [piece[0][0]+1, piece[0][1]+2] in piece :
             return "L","1"
-        elif[piece[0][0]-1,piece[0][1]] in piece and [piece[0][0]-2, piece[0][1]] in piece and [piece[0][0]-2, piece[0][1]+1] in piece :
+        elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]] in piece and [piece[0][0], piece[0][1]+1] in piece :
             return "L", "2"
-        elif[piece[0][0],piece[0][1]-1] in piece and [piece[0][0], piece[0][1]-2] in piece and [piece[0][0]-1, piece[0][1]-2] in piece :
+        elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+2] in piece :
             return "L", "3"
-        elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]-1] in piece :
+        elif[piece[0][0]-2,piece[0][1]+1] in piece and [piece[0][0]-1, piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+1] in piece :
             return "L", "4"
 
         
@@ -204,7 +204,7 @@ def complete_lines(board):
 
 def cost(height, bumpiness,number_holes, complines):
 
-    return (-0.510066)*height + (-0.184483)*bumpiness + (-0.35663)*number_holes + (0.760666)*complines
+    return (-0.510066)*height + (-0.284483)*bumpiness + (-0.802034)*number_holes + (0.760666)*complines
 
 
 def best_possibility(custos,game_possibilities):
@@ -240,6 +240,40 @@ def rotate(piece):
     elif form=="S" and type=="2":
         piece=[[x,y],[x,y+1],[x+1,y+1],[x+1,y+2]]
 
+    elif form=="Z" and type == "1":
+        piece=[[x,y],[x+1,y],[x+1,y+1],[x+2,y+1]]
+    elif form=="Z" and type == "2":
+        piece=[[x,y],[x-1,y+1],[x,y+1],[x-1,y+2]]
+        
+    
+    elif form=="J" and type == "1":
+        piece=[[x,y],[x+1,y],[x+2,y],[x+2,y+1]]
+    elif form=="J" and type == "2":
+        piece=[[x,y],[x,y+1],[x-1,y+2],[x,y+2]]
+    elif form=="J" and type == "3":
+        piece=[[x,y],[x,y+1],[x+1,y+1],[x+2,y+1]]
+    elif form=="J" and type == "4":
+        piece=[[x,y],[x+1,y],[x,y+1],[x-1,y+2]]
+
+    elif form == "T" and type == "1":
+        piece=[[x,y],[x+1,y],[x+2,y],[x+1,y+1]]
+    elif form =="T" and type == "2":
+        piece = [[x,y],[x-1,y+1],[x,y+1],[x,y+2]]
+    elif form =="T" and type == "3":
+        piece = [[x,y],[x-1,y+1],[x,y+1],[x+1,y+1]]
+    elif form =="T" and type == "4":
+        piece = [[x,y],[x,y+1],[x+1,y+1],[x,y+2]]
+
+    elif form == "L" and type == "1":
+        piece=[[x,y],[x+1,y],[x+2,y],[x,y+1]]
+    elif form =="L" and type == "2":
+        piece = [[x,y],[x+1,y],[x+1,y+1],[x+1,y+2]]
+    elif form =="L" and type == "3":
+        piece = [[x,y],[x-2,y+1],[x-1,y+1],[x,y+1]]
+    elif form =="L" and type == "4":
+        piece = [[x,y],[x,y+1],[x,y+2],[x+1,y+2]]
+
+    
     return piece
 
 
@@ -250,10 +284,19 @@ def possibilities_rotation(piece, game):
         numrotation=2
     elif peca=='S':
         numrotation=2
+    elif peca =="Z":
+        numrotation=2
+    elif peca =="J":
+        numrotation=4
+    elif peca=="T":
+        numrotation=4
+    elif peca=="L":
+        numrotation=4
     else:
         numrotation=1
 
     newpiece = piece
+
     for rotation in range(numrotation):
         anothergame = possibilities(newpiece,game)
         allmapas+=anothergame
@@ -331,7 +374,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             board_possiblidades.append(get_board(game_possiblidades[i]))
                             #pprint.pprint(board_possiblidades)
                             
-                        #print("Numero de possiblidades",len(game_possiblidades))
+                        print("Numero de possiblidades",len(game_possiblidades))
 
                         custos=[]
 
@@ -341,8 +384,9 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             Bumpiness= bumpiness(board_possiblidades[a])
                             Comp_lines = complete_lines(board_possiblidades[a])
                             custos.append(cost(Height,Bumpiness,number_holes,Comp_lines))
+                            print(a)
 
-                        print(custos)
+                        #print(custos)
                         BestGame,indice=best_possibility(custos, game_possiblidades)
                         print(indice)
                         #print("Best game", BestGame)
@@ -363,14 +407,9 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                 
                 if piece :
 
-                    # counter=0
 
-                    # if(counter==0):
-                    #     key="w"
-                    #     counter+=1
-                    #     print(piece)
-
-                    
+                    # key="w"
+                    # print(piece)
 
                     xBest= [best_piece_position[0][0],best_piece_position[1][0],best_piece_position[2][0],best_piece_position[3][0]]
                     minvalueBest = min(xBest)
@@ -393,14 +432,50 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             rotacao=1
 
                     elif( peca=="S"):
-                        if(indice < 6):
+                        if(indice < 7):
                             rotacao=0
-                        elif indice >=6:
+                        elif indice >=7:
                             rotacao=1
+
+                    elif( peca=="Z"):
+                        if(indice < 7):
+                            rotacao=0
+                        elif indice >= 7:
+                            rotacao=1
+
+                    elif(peca =="J"):
+                        if(indice < 7):
+                            rotacao=0
+                        elif indice >= 7 and indice <13:
+                            rotacao=1
+                        elif indice >= 13 and indice <20:
+                            rotacao=2
+                        elif indice >=20:
+                            rotacao=3
+
+                    elif(peca =="T"):
+                        if(indice < 7):
+                            rotacao=0
+                        elif indice >= 7 and indice <13:
+                            rotacao=1
+                        elif indice >= 13 and indice <20:
+                            rotacao=2
+                        elif indice >=20:
+                            rotacao=3
+
+                    elif(peca =="L"):
+                        if(indice < 7):
+                            rotacao=0
+                        elif indice >= 7 and indice <13:
+                            rotacao=1
+                        elif indice >= 13 and indice <20:
+                            rotacao=2
+                        elif indice >=20:
+                            rotacao=3
                     
                     else: rotacao=0
 
-
+                    
                     if(rodou != rotacao):
                         key="w"
                         rodou +=1
@@ -412,8 +487,8 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                         elif(minvalueActual > minvalueBest):
                             key="a"
 
-                            # elif(minvalueActual==minvalueBest):
-                            #     key="s"
+                        elif(minvalueActual==minvalueBest):
+                            key="s"
                     
                         
                 await websocket.send(
