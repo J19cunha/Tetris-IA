@@ -214,8 +214,7 @@ def best_possibility(custos,game_possibilities):
         if(max_cost==custos[a]):
             indice=a
 
-    #print(indice)
-    return game_possibilities[indice]
+    return game_possibilities[indice], indice
 
                         
 def rotate(piece):
@@ -250,26 +249,30 @@ def possibilities_rotation(piece, game):
         allmapas+=anothergame
         newpiece = rotate(newpiece)
     return allmapas
-def decision(minvalueActual, minvalueBest):
-    key=""
-
-    if(minvalueActual < minvalueBest):
-        key="d"
-
-    if(minvalueActual > minvalueBest):
-        # for i in range(minvalueActual-minvalueBest):
-        key="a"
-
-    if(minvalueActual==minvalueBest):
-        key="s"
 
 
-    return key
+
+#isto estou a fazer em baixo, depois podemos alterar para uma função
+# def decision(minvalueActual, minvalueBest):
+#     key=""
+
+#     if(minvalueActual < minvalueBest):
+#         key="d"
+
+#     if(minvalueActual > minvalueBest):
+#         # for i in range(minvalueActual-minvalueBest):
+#         key="a"
+
+#     if(minvalueActual==minvalueBest):
+#         key="s"
+
+
+#     return key
 
 
 
     
-possibilities
+
 async def agent_loop(server_address="localhost:8000", agent_name="student"):
     async with websockets.connect(f"ws://{server_address}/player") as websocket:
 
@@ -302,9 +305,10 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                 if start:  
                     if piece:
                         #print("\n")
+                        
                         rodou=0 
                         figure = check_figure(piece)
-                        #print("GAME ATUAL", game)
+                        print("GAME ATUAL", game)
                         #game_possiblidades = possibilities(piece, game)
                         game_possiblidades = possibilities_rotation(piece,game)
                         #print("GAME_POSSIBLIDADES", game_possiblidades)
@@ -316,7 +320,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             #print(game_possiblidades[i])
                             board_possiblidades.append(get_board(game_possiblidades[i]))
                             #pprint.pprint(board_possiblidades)
-
+                            
 
                         custos=[]
 
@@ -327,8 +331,9 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             Comp_lines = complete_lines(board_possiblidades[a])
                             custos.append(cost(Height,Bumpiness,number_holes,Comp_lines))
 
-                        #print(custos)
-                        BestGame=best_possibility(custos, game_possiblidades)
+                        print(custos)
+                        BestGame,indice=best_possibility(custos, game_possiblidades)
+                        #print(indice)
                         #print("Best game", BestGame)
 
                         best_piece_position=[]
@@ -336,7 +341,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                         #     best_piece_position.append(BestGame[l])
 
                         best_piece_position=[BestGame[-4], BestGame[-3], BestGame[-2], BestGame[-1]]
-                        #print("Best postion",best_piece_position)
+                        print("Best postion",best_piece_position)
                         
                         #print("Piece que cai",piece_atual)
 
@@ -352,21 +357,39 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                     xActual = [piece[0][0],piece[1][0],piece[2][0],piece[3][0]]
                     minvalueActual = min(xActual)
                     peca, tipo =check_figure(piece)
-                    print(minvalueBest)
-                    if peca == "I":
-                        if minvalueBest < 8:
-                            rotacao = 0
-                        elif minvalueBest >= 8:
+                    #print(peca)
+                    print(indice)
+                    #print(minvalueBest)
+
+
+                   
+                    if( peca=="I"):
+                        if(indice < 5):
+                            rotacao=0
+                        elif indice >=5:
                             print("entrou")
-                            minvalueBest-=7
-                            rotacao = 1
-                    print(f"onde tem der ir -> {minvalueBest}")
-                    # print(f"onde está -> {minvalueActual}")
-                    key=""
+                            rotacao=1
+                    
+                    else: rotacao=0
+
                     if rodou != rotacao:
                         key="w"
-                        rodou+=1
+                        rodou +=1
                     else:
+                    # if peca == "I":
+                    #     if minvalueBest < 8:
+                    #         rotacao = 0
+                    #     elif minvalueBest >= 8:
+                    #         print("entrou")
+                    #         minvalueBest-=7
+                    #         rotacao = 1
+                    # print(f"onde tem der ir -> {minvalueBest}")
+                    # # print(f"onde está -> {minvalueActual}")
+                    # key=""
+                    # if rodou != rotacao:
+                    #     key="w"
+                    #     rodou+=1
+                    # else:
                         if(minvalueActual < minvalueBest):
                             key="d"
 
@@ -374,8 +397,8 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             # for i in range(minvalueActual-minvalueBest):
                             key="a"
 
-                        # elif(minvalueActual==minvalueBest):
-                        #     key="s"
+                        elif(minvalueActual==minvalueBest):
+                            key="s"
                     
                         
                 await websocket.send(
