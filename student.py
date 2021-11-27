@@ -32,7 +32,7 @@ def check_figure(piece):
 
         elif[piece[0][0], piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+1] in piece and [piece[0][0]+1, piece[0][1]+2] in piece:
             return "S","1"
-        elif[piece[0][0]-1, piece[0][1]] in piece and [piece[0][0]-1, piece[0][1]+1] in piece and [piece[0][0]-2, piece[0][1]+1] in piece:
+        elif[piece[0][0]+1, piece[0][1]] in piece and [piece[0][0]-1, piece[0][1]+1] in piece and [piece[0][0], piece[0][1]+1] in piece:
             return "S","2"
             
 
@@ -70,6 +70,8 @@ def check_figure(piece):
             return "L", "3"
         elif[piece[0][0]+1,piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]] in piece and [piece[0][0]+2, piece[0][1]-1] in piece :
             return "L", "4"
+
+        
 
 
 def possibilities(piece,game):
@@ -233,6 +235,11 @@ def rotate(piece):
     elif form =="I" and type =="2":
         piece=[[x,y],[x-1,y],[x-2,y],[x+1,y]]
 
+    elif form == "S" and type == "1":
+        piece=[[x,y],[x+1,y],[x-1,y+1],[x,y+1]]
+    elif form=="S" and type=="2":
+        piece=[[x,y],[x,y+1],[x+1,y+1],[x+1,y+2]]
+
     return piece
 
 
@@ -241,8 +248,11 @@ def possibilities_rotation(piece, game):
     allmapas = []
     if peca == 'I':
         numrotation=2
+    elif peca=='S':
+        numrotation=2
     else:
         numrotation=1
+
     newpiece = piece
     for rotation in range(numrotation):
         anothergame = possibilities(newpiece,game)
@@ -308,7 +318,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                         
                         rodou=0 
                         figure = check_figure(piece)
-                        print("GAME ATUAL", game)
+                        #print("GAME ATUAL", game)
                         #game_possiblidades = possibilities(piece, game)
                         game_possiblidades = possibilities_rotation(piece,game)
                         #print("GAME_POSSIBLIDADES", game_possiblidades)
@@ -321,6 +331,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             board_possiblidades.append(get_board(game_possiblidades[i]))
                             #pprint.pprint(board_possiblidades)
                             
+                        #print("Numero de possiblidades",len(game_possiblidades))
 
                         custos=[]
 
@@ -333,7 +344,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
 
                         print(custos)
                         BestGame,indice=best_possibility(custos, game_possiblidades)
-                        #print(indice)
+                        print(indice)
                         #print("Best game", BestGame)
 
                         best_piece_position=[]
@@ -351,15 +362,27 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                     start = 1
                 
                 if piece :
+
+                    # counter=0
+
+                    # if(counter==0):
+                    #     key="w"
+                    #     counter+=1
+                    #     print(piece)
+
+                    
+
                     xBest= [best_piece_position[0][0],best_piece_position[1][0],best_piece_position[2][0],best_piece_position[3][0]]
                     minvalueBest = min(xBest)
                     
+
                     xActual = [piece[0][0],piece[1][0],piece[2][0],piece[3][0]]
                     minvalueActual = min(xActual)
                     peca, tipo =check_figure(piece)
-                    #print(peca)
-                    print(indice)
-                    #print(minvalueBest)
+                    #print(peca,tipo)
+                    #print(indice)
+                    #print("Min",minvalueBest)
+                    #print("MinActual", minvalueActual)
 
 
                    
@@ -367,38 +390,30 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                         if(indice < 5):
                             rotacao=0
                         elif indice >=5:
-                            print("entrou")
+                            rotacao=1
+
+                    elif( peca=="S"):
+                        if(indice < 6):
+                            rotacao=0
+                        elif indice >=6:
                             rotacao=1
                     
                     else: rotacao=0
 
-                    if rodou != rotacao:
+
+                    if(rodou != rotacao):
                         key="w"
                         rodou +=1
+
                     else:
-                    # if peca == "I":
-                    #     if minvalueBest < 8:
-                    #         rotacao = 0
-                    #     elif minvalueBest >= 8:
-                    #         print("entrou")
-                    #         minvalueBest-=7
-                    #         rotacao = 1
-                    # print(f"onde tem der ir -> {minvalueBest}")
-                    # # print(f"onde está -> {minvalueActual}")
-                    # key=""
-                    # if rodou != rotacao:
-                    #     key="w"
-                    #     rodou+=1
-                    # else:
                         if(minvalueActual < minvalueBest):
                             key="d"
 
                         elif(minvalueActual > minvalueBest):
-                            # for i in range(minvalueActual-minvalueBest):
                             key="a"
 
-                        elif(minvalueActual==minvalueBest):
-                            key="s"
+                            # elif(minvalueActual==minvalueBest):
+                            #     key="s"
                     
                         
                 await websocket.send(
