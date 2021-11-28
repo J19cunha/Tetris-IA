@@ -204,7 +204,7 @@ def complete_lines(board):
 
 def cost(height, bumpiness,number_holes, complines):
 
-    return (-0.510066)*height + (-0.284483)*bumpiness + (-0.802034)*number_holes + (0.760666)*complines
+    return (-0.510066)*height + (-0.284483)*bumpiness + (-0.802034)*number_holes + (0.860666)*complines
 
 
 def best_possibility(custos,game_possibilities):
