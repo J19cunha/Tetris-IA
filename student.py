@@ -148,7 +148,7 @@ def agregate_height(board):
     for x in range (1,9):    
         for y in range (1,30):
             if(board[y-1][x-1]==1):
-                height+=30-y
+                height+=(30-y)
                 break
 
     return height
@@ -183,7 +183,8 @@ def bumpiness(board):
 
     for i in range(len(height)-1):
         bumpiness = abs(height[i] -height[i+1])
-        total_bumpiness += bumpiness
+        max_bumpiness = max(bumpiness, max_bumpiness)
+        total_bumpiness += abs(height[i] - height[i+1])
 
     return total_bumpiness
 
@@ -203,7 +204,7 @@ def complete_lines(board):
 
 def cost(height, bumpiness,number_holes, complines):
 
-    return (-0.510066)*height + (-0.284483)*bumpiness + (-0.352034)*number_holes + (0.860666)*complines
+    return (-0.510066)*height + (-0.284483)*bumpiness + (-0.802034)*number_holes + (0.860666)*complines
 
 
 def best_possibility(custos,game_possibilities):
@@ -304,25 +305,6 @@ def possibilities_rotation(piece, game):
 
 
 
-#isto estou a fazer em baixo, depois podemos alterar para uma função
-# def decision(minvalueActual, minvalueBest):
-#     key=""
-
-#     if(minvalueActual < minvalueBest):
-#         key="d"
-
-#     if(minvalueActual > minvalueBest):
-#         # for i in range(minvalueActual-minvalueBest):
-#         key="a"
-
-#     if(minvalueActual==minvalueBest):
-#         key="s"
-
-
-#     return key
-
-
-
     
 
 async def agent_loop(server_address="localhost:8000", agent_name="student"):
@@ -333,7 +315,10 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
         msg = await websocket.recv()
         game_properties = json.loads(msg)
 
-       
+        # Next 3 lines are not needed for AI agent
+        # SCREEN = pygame.display.set_mode((299, 123))
+        # SPRITES = pygame.image.load("data/pad.png").convert_alpha()
+        # SCREEN.blit(SPRITES, (0, 0))
         rotacao =0
         start = 1
         listafinal=[]
