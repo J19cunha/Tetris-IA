@@ -204,7 +204,8 @@ def complete_lines(board):
 
 def cost(height, bumpiness,number_holes, complines):
 
-    return (-0.510066)*height + (-0.284483)*bumpiness + (-0.802034)*number_holes + (0.860666)*complines
+    # return (-0.510066)*height + (-0.284483)*bumpiness + (-0.302034)*number_holes + (0.760666)*complines
+    return (-0.400066)*height + (-0.184483)*bumpiness + (-0.612034)*number_holes + (0.780666)*complines
 
 
 def best_possibility(custos,game_possibilities):
@@ -319,6 +320,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
         # SCREEN = pygame.display.set_mode((299, 123))
         # SPRITES = pygame.image.load("data/pad.png").convert_alpha()
         # SCREEN.blit(SPRITES, (0, 0))
+
         rotacao =0
         start = 1
         listafinal=[]
@@ -385,7 +387,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                         start = 0
                 if not piece:
                     start = 1
-                
+
                 if piece :
 
 

@@ -133,4 +133,8 @@ class Game:
         ) and not any([piece_part in self.game for piece_part in piece.positions])
 
     def collide_lateral(self, piece):
+<<<<<<< HEAD
         return any([piece_part in self._lateral for piece_part in piece.positions])
+=======
+        return any([piece_part in self._lateral for piece_part in piece.positions])
+>>>>>>> upstream/main
