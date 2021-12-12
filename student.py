@@ -83,9 +83,7 @@ def possibilities(piece,game):
     newpiece = [[piece[0][0]-minvalue+1,piece[0][1]-miny+1],[piece[1][0]-minvalue+1,piece[1][1]-miny+1],[piece[2][0]-minvalue+1,piece[2][1]-miny+1],[piece[3][0]-minvalue+1,piece[3][1]-miny+1]]
     listp=[]
     aux = newpiece
-    #print(f"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa    {aux}")
-    #print(maxY)  
-
+   
 
     for x in range(1,9,1):
         newpiece = [ [aux[0][0]+x-1,aux[0][1]],[aux[1][0]+x-1,aux[1][1]],[aux[2][0]+x-1,aux[2][1]],[aux[3][0]+x-1,aux[3][1]]]
@@ -120,13 +118,6 @@ def possibilities(piece,game):
         newGame= game+piecee
         game_possibilities.append(newGame) 
         
-    # print("GAME: ",game_possibilities)
-    # b=len(game_possibilities)
-    # a=game_possibilities[0]
-    # print("FIRST",a)
-    # print("NUMERO", b)
-
-    #numero_possiblidades=8-larguradapeça+1
 
     return game_possibilities
 
@@ -144,26 +135,28 @@ def get_board(game):
 
 
 def agregate_height(board):
-    height=0
+
+    height2=0
+
     for x in range (1,9):    
         for y in range (1,30):
             if(board[y-1][x-1]==1):
-                height+=(30-y)
+                height2+=(30-y)
                 break
-
-    return height
-
+    
+    return height2
+  
 def number_of_holes(board):
     holes=0
 
     for column in zip(*board):
-        i=0
-        while i<29 and column[i] != 1:
-            i+=1
+         i=0
+         while i<29 and column[i] != 1:
+             i+=1
 
-        holes += len([x for x in column[i+1:] if x == 0])
+         holes += len([x for x in column[i+1:] if x == 0])
 
-    #print(holes)
+
     return holes
 
 
@@ -172,19 +165,21 @@ def bumpiness(board):
 
     height=[]
     total_bumpiness=0
-    max_bumpiness=0
 
     for x in range (1,9):    
         for y in range (1,30):
             if(board[y-1][x-1]==1):
                 height.append(30-y)
                 break
+            else:
+                if(y==29):
+                    height.append(0)
+   
 
 
     for i in range(len(height)-1):
         bumpiness = abs(height[i] -height[i+1])
-        max_bumpiness = max(bumpiness, max_bumpiness)
-        total_bumpiness += abs(height[i] - height[i+1])
+        total_bumpiness += bumpiness
 
     return total_bumpiness
 
@@ -204,8 +199,7 @@ def complete_lines(board):
 
 def cost(height, bumpiness,number_holes, complines):
 
-    # return (-0.510066)*height + (-0.284483)*bumpiness + (-0.302034)*number_holes + (0.760666)*complines
-    return (-0.400066)*height + (-0.184483)*bumpiness + (-0.612034)*number_holes + (0.780666)*complines
+    return (-0.510066)*height + (-0.184483)*bumpiness + (-0.35663)*number_holes + (0.760666)*complines
 
 
 def best_possibility(custos,game_possibilities):
@@ -231,48 +225,54 @@ def rotate(piece):
     if form=="O":
         return piece
 
-    elif form =="I" and type =="1":
-        piece=[[x,y],[x,y+1],[x,y+2],[x,y+3]]
-    elif form =="I" and type =="2":
-        piece=[[x,y],[x-1,y],[x-2,y],[x+1,y]]
+    elif form =="I":
+        if type =="1":
+            piece=[[x,y],[x,y+1],[x,y+2],[x,y+3]]
+        elif type =="2":
+            piece=[[x,y],[x-1,y],[x-2,y],[x+1,y]]
 
-    elif form == "S" and type == "1":
-        piece=[[x,y],[x+1,y],[x-1,y+1],[x,y+1]]
-    elif form=="S" and type=="2":
-        piece=[[x,y],[x,y+1],[x+1,y+1],[x+1,y+2]]
+    elif form == "S":
+        if type == "1":
+            piece=[[x,y],[x+1,y],[x-1,y+1],[x,y+1]]
+        elif type=="2":
+            piece=[[x,y],[x,y+1],[x+1,y+1],[x+1,y+2]]
 
-    elif form=="Z" and type == "1":
-        piece=[[x,y],[x+1,y],[x+1,y+1],[x+2,y+1]]
-    elif form=="Z" and type == "2":
-        piece=[[x,y],[x-1,y+1],[x,y+1],[x-1,y+2]]
+    elif form=="Z":
+        if type=="1":
+            piece=[[x,y],[x+1,y],[x+1,y+1],[x+2,y+1]]
+        elif type == "2":
+            piece=[[x,y],[x-1,y+1],[x,y+1],[x-1,y+2]]
         
     
-    elif form=="J" and type == "1":
-        piece=[[x,y],[x+1,y],[x+2,y],[x+2,y+1]]
-    elif form=="J" and type == "2":
-        piece=[[x,y],[x,y+1],[x-1,y+2],[x,y+2]]
-    elif form=="J" and type == "3":
-        piece=[[x,y],[x,y+1],[x+1,y+1],[x+2,y+1]]
-    elif form=="J" and type == "4":
-        piece=[[x,y],[x+1,y],[x,y+1],[x-1,y+2]]
+    elif form=="J":
+        if type == "1":
+            piece=[[x,y],[x+1,y],[x+2,y],[x+2,y+1]]
+        elif type == "2":
+            piece=[[x,y],[x,y+1],[x-1,y+2],[x,y+2]]
+        elif type == "3":
+            piece=[[x,y],[x,y+1],[x+1,y+1],[x+2,y+1]]
+        elif type == "4":
+            piece=[[x,y],[x+1,y],[x,y+1],[x-1,y+2]]
 
-    elif form == "T" and type == "1":
-        piece=[[x,y],[x+1,y],[x+2,y],[x+1,y+1]]
-    elif form =="T" and type == "2":
-        piece = [[x,y],[x-1,y+1],[x,y+1],[x,y+2]]
-    elif form =="T" and type == "3":
-        piece = [[x,y],[x-1,y+1],[x,y+1],[x+1,y+1]]
-    elif form =="T" and type == "4":
-        piece = [[x,y],[x,y+1],[x+1,y+1],[x,y+2]]
+    elif form == "T":
+        if type == "1":
+            piece=[[x,y],[x+1,y],[x+2,y],[x+1,y+1]]
+        elif type == "2":
+            piece = [[x,y],[x-1,y+1],[x,y+1],[x,y+2]]
+        elif type == "3":
+            piece = [[x,y],[x-1,y+1],[x,y+1],[x+1,y+1]]
+        elif type == "4":
+            piece = [[x,y],[x,y+1],[x+1,y+1],[x,y+2]]
 
-    elif form == "L" and type == "1":
-        piece=[[x,y],[x+1,y],[x+2,y],[x,y+1]]
-    elif form =="L" and type == "2":
-        piece = [[x,y],[x+1,y],[x+1,y+1],[x+1,y+2]]
-    elif form =="L" and type == "3":
-        piece = [[x,y],[x-2,y+1],[x-1,y+1],[x,y+1]]
-    elif form =="L" and type == "4":
-        piece = [[x,y],[x,y+1],[x,y+2],[x+1,y+2]]
+    elif form == "L":
+        if type == "1":
+            piece=[[x,y],[x+1,y],[x+2,y],[x,y+1]]
+        elif type == "2":
+            piece = [[x,y],[x+1,y],[x+1,y+1],[x+1,y+2]]
+        elif type == "3":
+            piece = [[x,y],[x-2,y+1],[x-1,y+1],[x,y+1]]
+        elif type == "4":
+            piece = [[x,y],[x,y+1],[x,y+2],[x+1,y+2]]
 
     
     return piece
@@ -305,7 +305,6 @@ def possibilities_rotation(piece, game):
     return allmapas
 
 
-
     
 
 async def agent_loop(server_address="localhost:8000", agent_name="student"):
@@ -320,7 +319,6 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
         # SCREEN = pygame.display.set_mode((299, 123))
         # SPRITES = pygame.image.load("data/pad.png").convert_alpha()
         # SCREEN.blit(SPRITES, (0, 0))
-
         rotacao =0
         start = 1
         listafinal=[]
@@ -341,6 +339,9 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                 if start:  
                     if piece:
                         #print("\n")
+
+                        
+
                         
                         rodou=0 
                         figure = check_figure(piece)
@@ -356,8 +357,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             #print(game_possiblidades[i])
                             board_possiblidades.append(get_board(game_possiblidades[i]))
                             #pprint.pprint(board_possiblidades)
-                            
-                        print("Numero de possiblidades",len(game_possiblidades))
+                          
 
                         custos=[]
 
@@ -367,32 +367,23 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             Bumpiness= bumpiness(board_possiblidades[a])
                             Comp_lines = complete_lines(board_possiblidades[a])
                             custos.append(cost(Height,Bumpiness,number_holes,Comp_lines))
-                            print(a)
 
-                        #print(custos)
                         BestGame,indice=best_possibility(custos, game_possiblidades)
-                        print(indice)
-                        #print("Best game", BestGame)
-
+                     
                         best_piece_position=[]
-                        # for l in range():
-                        #     best_piece_position.append(BestGame[l])
-
-                        best_piece_position=[BestGame[-4], BestGame[-3], BestGame[-2], BestGame[-1]]
-                        print("Best postion",best_piece_position)
                         
-                        #print("Piece que cai",piece_atual)
+                        best_piece_position=[BestGame[-4], BestGame[-3], BestGame[-2], BestGame[-1]]
+                        
+                     
 
 
                         start = 0
                 if not piece:
                     start = 1
-
+                
                 if piece :
 
 
-                    # key="w"
-                    # print(piece)
 
                     xBest= [best_piece_position[0][0],best_piece_position[1][0],best_piece_position[2][0],best_piece_position[3][0]]
                     minvalueBest = min(xBest)
@@ -401,29 +392,26 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                     xActual = [piece[0][0],piece[1][0],piece[2][0],piece[3][0]]
                     minvalueActual = min(xActual)
                     peca, tipo =check_figure(piece)
-                    #print(peca,tipo)
-                    #print(indice)
-                    #print("Min",minvalueBest)
-                    #print("MinActual", minvalueActual)
+                   
 
 
-                
+                   
                     if( peca=="I"):
                         if(indice < 5):
                             rotacao=0
-                        elif indice >=5:
+                        else:
                             rotacao=1
 
                     elif( peca=="S"):
                         if(indice < 7):
                             rotacao=0
-                        elif indice >=7:
+                        else:
                             rotacao=1
 
                     elif( peca=="Z"):
                         if(indice < 7):
                             rotacao=0
-                        elif indice >= 7:
+                        else:
                             rotacao=1
 
                     elif(peca =="J"):
@@ -433,7 +421,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             rotacao=1
                         elif indice >= 13 and indice <20:
                             rotacao=2
-                        elif indice >=20:
+                        else:
                             rotacao=3
 
                     elif(peca =="T"):
@@ -443,7 +431,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             rotacao=1
                         elif indice >= 13 and indice <20:
                             rotacao=2
-                        elif indice >=20:
+                        else:
                             rotacao=3
 
                     elif(peca =="L"):
@@ -453,7 +441,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                             rotacao=1
                         elif indice >= 13 and indice <20:
                             rotacao=2
-                        elif indice >=20:
+                        else:
                             rotacao=3
                     
                     else: rotacao=0
@@ -477,31 +465,7 @@ async def agent_loop(server_address="localhost:8000", agent_name="student"):
                 await websocket.send(
                     json.dumps({"cmd": "key", "key": key})
                 )
-                # Next lines are only for the Human Agent, the key values are nonetheless the correct ones!
-                # key = ""
-                # for event in pygame.event.get():
-                #     if event.type == pygame.QUIT:
-                #         pygame.quit()
-
-                #     if event.type == pygame.KEYDOWN:
-                #         if event.key == pygame.K_UP:
-                #             key = "w"
-                #         elif event.key == pygame.K_LEFT:
-                #             key = "a"
-                #         elif event.key == pygame.K_DOWN:
-                #             key = "s"
-                #         elif event.key == pygame.K_RIGHT:
-                #             key = "d"
-
-                #         elif event.key == pygame.K_d:
-                #             import pprint
-
-                #             pprint.pprint(state)
-
-                #         await websocket.send(
-                #             json.dumps({"cmd": "key", "key": key})
-                #         )  # send key command to server - you must implement this send in the AI agent
-                #         break
+              
 
             except websockets.exceptions.ConnectionClosedOK:
                 print("Server has cleanly disconnected us")

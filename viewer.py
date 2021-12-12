@@ -230,8 +230,4 @@ if __name__ == "__main__":
     except RuntimeError as err:
         logger.error(err)
     finally:
-<<<<<<< HEAD
         LOOP.stop()
-=======
-        LOOP.stop()
->>>>>>> upstream/main

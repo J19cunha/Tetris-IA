@@ -192,8 +192,4 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(asyncio.gather(websocket_server, game_loop_task))
-<<<<<<< HEAD
     loop.close()
-=======
-    loop.close()
->>>>>>> upstream/main
