@@ -1,5 +1,5 @@
 # IA-Tetris
-Projecto de Inteligência Artificial 2021 - Tetris
+Tetris for AI teaching
 
 ## How to install
 
